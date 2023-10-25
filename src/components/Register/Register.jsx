@@ -1,10 +1,12 @@
 import React, { useContext, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { FaFacebook, FaGoogle } from 'react-icons/fa';
+import { FaFacebook, FaGoogle, FaRegEye, FaRegEyeSlash } from 'react-icons/fa';
 import { AuthContext } from '../AuthProvider/AuthProvider';
 
 const Register = () => {
     const [error, setError] = useState('');
+    const [showEye, setShowEye] = useState(false);
+    const [showPassword, setShowPassword] = useState(false)
     const { signup } = useContext(AuthContext);
 
     const handleSignIn = (event) => {
@@ -13,13 +15,43 @@ const Register = () => {
         const email = form.email.value;
         const password = form.password.value;
         const confirmPassword = form.confirmPassword.value;
-        console.log(email,password,confirmPassword);
+        console.log(email, password, confirmPassword);
 
-        if(password !== confirmPassword){
-            setError('')
+        if (password !== confirmPassword) {
+            setError("Password didn't matched.");
+            return;
         }
+        else if (password.length < 6) {
+            setError("Password should at least 6 or more.")
+            return;
+        }
+        else if (!/^(?=.*[~`!@#$%^&*()--+={}\[\]|\\:;"'<>,.?/_₹]).*$/.test(password)) {
+            setError("Implement a special character in your password.")
+            return;
+        }
+        else {
+            setError('');
+            form.reset();
+        }
+        // firebse createUserWithEmailAndPassword here
+        signup(email, password)
+            .then(result => {
+                const loggedUser = result.user;
+                console.log(loggedUser);
+            })
+            .catch(error => {
+                setError(error.message)
+                console.error(error);
+            })
     }
 
+    // handle showPassword and eye
+
+    const handleShowPassAndEyebtn = () => {
+        setShowEye(!showEye);
+        setShowPassword(!showPassword);
+
+    }
 
 
     return (
@@ -30,14 +62,26 @@ const Register = () => {
                     <div className="form-control">
                         <input type="email" name='email' placeholder="Email" className="input input-bordered" required />
                     </div>
-                    <div className="form-control">
-                        <input type="password" name='password' placeholder="Password" className="input input-bordered" required />
+                    <div className="form-control relative">
+                        <input type={showPassword ? "text" : "password"} name='password' placeholder="Password" className="input input-bordered" required />
+                        <div className='absolute inset-y-4 right-4 '>
+                            <button type="button" onClick={handleShowPassAndEyebtn}>
+                                {showEye ? <FaRegEyeSlash /> : <FaRegEye />}
+                            </button>
+                        </div>
                     </div>
-                    <div className="form-control">
-                        <input type="password" name='confirmPassword' placeholder="Confirm Password" className="input input-bordered" required />
+                    <div className="form-control relative">
+                        <input type={showPassword ? "text" : "password"} name='confirmPassword' placeholder="Confirm Password" className="input input-bordered" required />
+                        <div className='absolute inset-y-4 right-4 '>
+                            <button type="button" onClick={handleShowPassAndEyebtn}>
+                                {showEye ? <FaRegEyeSlash /> : <FaRegEye />}
+                            </button>
+
+                        </div>
                         <label className="label">
                             <a href="#" className="label-text-alt link link-hover">Forgot password?</a>
                         </label>
+                        <p className='text-center text-red-600'><small>{error}</small></p>
                     </div>
 
                     <div className="form-control mt-2">
