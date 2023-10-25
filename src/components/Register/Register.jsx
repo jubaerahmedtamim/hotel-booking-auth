@@ -7,7 +7,7 @@ const Register = () => {
     const [error, setError] = useState('');
     const [showEye, setShowEye] = useState(false);
     const [showPassword, setShowPassword] = useState(false)
-    const { signup } = useContext(AuthContext);
+    const { signup, signupWithGooglePopup } = useContext(AuthContext);
 
     const handleSignIn = (event) => {
         event.preventDefault();
@@ -43,6 +43,19 @@ const Register = () => {
                 setError(error.message)
                 console.error(error);
             })
+    }
+
+    // handle singup with google popup 
+    const handleGooglePopup = () => {
+        signupWithGooglePopup()
+        .then(result => {
+            const loggedUser = result.user;
+            console.log(loggedUser);
+
+        })
+        .catch(error => {
+            setError(error.message);
+        })
     }
 
     // handle showPassword and eye
@@ -95,10 +108,10 @@ const Register = () => {
                     </div>
                     <div>
                         <div className=' bg-blue-600 hover:bg-blue-700 text-white p-2 rounded-lg text-center w-full flex items-center my-4'>
-                            <FaFacebook></FaFacebook> <button className='block flex-1'>  Login with Facebook</button>
+                            <FaFacebook></FaFacebook> <button  type='button' className='block flex-1'>  Login with Facebook</button>
                         </div>
                         <div className=' bg-white text-slate-700 hover:bg-slate-200  p-2 rounded-lg text-center w-full flex items-center '>
-                            <FaGoogle></FaGoogle> <button className='block flex-1'>  Login with Google</button>
+                            <FaGoogle></FaGoogle> <button onClick={handleGooglePopup} type='button' className='block flex-1'>  Login with Google</button>
                         </div>
                     </div>
                 </form>
